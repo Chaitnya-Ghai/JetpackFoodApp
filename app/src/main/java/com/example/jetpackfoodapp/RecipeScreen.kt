@@ -20,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -28,33 +29,42 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 import com.example.jetpackfoodapp.api_dataClasses.Category
+import com.example.jetpackfoodapp.dataClasses.RecipeState
 import com.example.jetpackfoodapp.viewModels.MainActivityViewModel
 
 @Composable
-fun RecipeScreen(modifier: Modifier = Modifier){
-    val recipeMvvm : MainActivityViewModel = viewModel()
-    val viewState by recipeMvvm.categoriesApiState
-    Box(modifier.fillMaxSize()){
-        when{
+fun RecipeScreen(
+    modifier: Modifier = Modifier,
+    viewModel: MainActivityViewModel = viewModel(),
+    navigateToDetail: (Category) -> Unit
+) {
+    val viewState by viewModel.categoriesApiState  // Correct state observation
+
+    Box(modifier.fillMaxSize()) {
+        when {
             viewState.isLoading -> {
-                CircularProgressIndicator(modifier=Modifier.align(Alignment.Center))
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             }
             viewState.error != null -> {
-
+                Text(
+                    text = viewState.error ?: "Unknown error",
+                    modifier = Modifier.align(Alignment.Center),
+                    color = Color.Red
+                )
             }
             else -> {
-                CategoryScreen(categories = viewState.categories)
+                CategoryScreen(categories = viewState.categories, navigateToDetail)
             }
         }
     }
 }
 
 @Composable
-fun CategoryScreen(categories: List<Category>) {
+fun CategoryScreen(categories: List<Category>, navigateToDetail: (Category) -> Unit = {}) {
     LazyVerticalGrid(GridCells.Fixed(2), modifier = Modifier.fillMaxSize().padding(5.dp)) {
         items(categories.filter { it.strCategory != "Beef" && it.strCategory != "Chicken" }) {
             category ->
-            CategoryItem(category = category , {})
+            CategoryItem(category = category , { navigateToDetail(category) })
         }
     }
 }
@@ -86,7 +96,7 @@ fun CategoryItem(category: Category , onClick: () -> Unit ) {
                     contentScale = ContentScale.Fit// Adjusts scaling
                 )
                 Text(
-                    text = category.strCategory,
+                    text = category.strCategory.toString(),
                     modifier = Modifier.padding(8.dp),
                     style = TextStyle(
                         fontFamily = FontFamily.Monospace,

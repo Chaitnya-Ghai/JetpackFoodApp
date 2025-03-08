@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    id("org.jetbrains.kotlin.plugin.parcelize") // Correct way without alias
 }
 
 android {
@@ -55,6 +56,9 @@ dependencies {
 
     // ✅ Coil (Image loading in Jetpack Compose)
     implementation("io.coil-kt:coil-compose:2.5.0")
+//    navigation
+    implementation("androidx.navigation:navigation-compose:2.8.8")
+
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
