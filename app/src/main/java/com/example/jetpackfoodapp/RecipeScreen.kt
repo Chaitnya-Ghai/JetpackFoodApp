@@ -29,7 +29,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 import com.example.jetpackfoodapp.api_dataClasses.Category
-import com.example.jetpackfoodapp.dataClasses.RecipeState
 import com.example.jetpackfoodapp.viewModels.MainActivityViewModel
 
 @Composable
@@ -38,23 +37,24 @@ fun RecipeScreen(
     viewModel: MainActivityViewModel = viewModel(),
     navigateToDetail: (Category) -> Unit
 ) {
-    val viewState by viewModel.categoriesApiState  // Correct state observation
+    val viewState by viewModel.categoriesApiState  // Correct categoryState observation
 
     Box(modifier.fillMaxSize()) {
-        when {
-            viewState.isLoading -> {
+        when(viewState) {
+            is SealedClass.Loading -> {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             }
-            viewState.error != null -> {
+            is SealedClass.Error -> {
+                val message = (viewState as SealedClass.Error).mesg ?: "Unknown Error"
                 Text(
-                    text = viewState.error ?: "Unknown error",
+                    text = message,
                     modifier = Modifier.align(Alignment.Center),
                     color = Color.Red
                 )
             }
-            else -> {
-                CategoryScreen(categories = viewState.categories, navigateToDetail)
-            }
+            is SealedClass.Success ->{
+                val categories = (viewState as SealedClass.Success<List<Category>>).data ?: emptyList()
+                CategoryScreen(categories = categories, navigateToDetail)            }
         }
     }
 }
