@@ -76,7 +76,7 @@ fun MealsScreen(
 @Composable
 fun MealLayout(meal: Meal) {
     Column(
-        modifier = Modifier.padding(8.dp).fillMaxSize().clickable{true} ,
+        modifier = Modifier.padding(18.dp).fillMaxSize().clickable{true} ,
         horizontalAlignment = Alignment.CenterHorizontally ,
         )
     {
@@ -86,6 +86,6 @@ fun MealLayout(meal: Meal) {
             modifier = Modifier.wrapContentSize().aspectRatio(1f),
             contentScale= ContentScale.Fit
         )
-        Text(text = meal.strMeal)
+        Text(text = meal.strMeal , modifier = Modifier.padding(8.dp))
     }
 }
